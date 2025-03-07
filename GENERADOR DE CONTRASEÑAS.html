@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Contraseñas Seguras</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full text-center">
+        <h2 class="text-xl font-bold mb-4">Generador de Contraseñas</h2>
+        <div class="mb-4 text-left">
+            <label class="block">Longitud: <span id="lengthValue">12</span></label>
+            <input type="range" id="length" min="6" max="32" value="12" class="w-full mt-2">
+        </div>
+        <div class="mb-4 text-left">
+            <label class="block"><input type="checkbox" id="uppercase" checked> Incluir mayúsculas</label>
+            <label class="block"><input type="checkbox" id="lowercase" checked> Incluir minúsculas</label>
+            <label class="block"><input type="checkbox" id="numbers" checked> Incluir números</label>
+            <label class="block"><input type="checkbox" id="symbols" checked> Incluir símbolos</label>
+        </div>
+        <button id="generate" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Generar Contraseña</button>
+        <div class="mt-4">
+            <input type="text" id="password" readonly class="w-full p-2 rounded bg-gray-700 text-center">
+            <button id="copy" class="mt-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full">Copiar</button>
+        </div>
+        <p id="strength" class="mt-4 text-sm"></p>
+    </div>
+    <script>
+        const lengthEl = document.getElementById('length');
+        const lengthValueEl = document.getElementById('lengthValue');
+        const uppercaseEl = document.getElementById('uppercase');
+        const lowercaseEl = document.getElementById('lowercase');
+        const numbersEl = document.getElementById('numbers');
+        const symbolsEl = document.getElementById('symbols');
+        const passwordEl = document.getElementById('password');
+        const generateBtn = document.getElementById('generate');
+        const copyBtn = document.getElementById('copy');
+        const strengthEl = document.getElementById('strength');
+        
+        const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+        const numberChars = '0123456789';
+        const symbolChars = '!@#$%^&*()_+[]{}|;:,.<>?/';
+        
+        lengthEl.addEventListener('input', () => {
+            lengthValueEl.textContent = lengthEl.value;
+        });
+        
+        generateBtn.addEventListener('click', () => {
+            let charset = '';
+            if (uppercaseEl.checked) charset += uppercaseChars;
+            if (lowercaseEl.checked) charset += lowercaseChars;
+            if (numbersEl.checked) charset += numberChars;
+            if (symbolsEl.checked) charset += symbolChars;
+            
+            if (charset === '') {
+                alert('Selecciona al menos un tipo de carácter.');
+                return;
+            }
+            
+            let password = '';
+            for (let i = 0; i < lengthEl.value; i++) {
+                password += charset[Math.floor(Math.random() * charset.length)];
+            }
+            
+            passwordEl.value = password;
+            evaluateStrength(password);
+        });
+        
+        copyBtn.addEventListener('click', () => {
+            passwordEl.select();
+            document.execCommand('copy');
+            alert('Contraseña copiada al portapapeles');
+        });
+        
+        function evaluateStrength(password) {
+            let strength = "Débil";
+            if (password.length > 10 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /\d/.test(password) && /[^A-Za-z0-9]/.test(password)) {
+                strength = "Fuerte";
+            } else if (password.length > 8 && /[A-Za-z]/.test(password) && /\d/.test(password)) {
+                strength = "Media";
+            }
+            strengthEl.textContent = `Fortaleza: ${strength}`;
+        }
+    </script>
+</body>
+</html>
